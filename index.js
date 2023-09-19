@@ -7,7 +7,7 @@ require('express-async-errors')
 const db = require('./db'),
     journeyRoutes = require('./controllers/journey.controller')
 
-//middlewore
+
 app.use(bodyparser.json())
 app.use('/api/journey', journeyRoutes)
 
