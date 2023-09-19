@@ -45,9 +45,13 @@ router.delete('/:jID', async (req, res) => {
 
 router.post('/', async (req, res) => {
     console.log(req.body);
-    await service.addJourney(req.body)
-    res.status(201).send('add successfully.')
-})
+    try {
+        await service.addJourney(req.body);
+        res.status(201).json({ message: '新增成功' });
+    } catch (error) {
+        res.status(500).json({ error: '發生錯誤' });
+    }
 
+})
 
 module.exports = router;
