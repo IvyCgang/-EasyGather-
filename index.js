@@ -24,8 +24,10 @@ app.post('/api/receive-json', (req, res) => {
     // You can now work with the JSON data as needed
     console.log('Received JSON data:', jsonData);
 
+    //await service.addJourney(req.body);
+    res.status(201).send('add successfully.');
+
     // Respond with a success message
-    res.json({message: 'JSON data received successfully'});
 });
 
 // //first make sure db connected is ok
