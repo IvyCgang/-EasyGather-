@@ -37,9 +37,9 @@ router.get('/:jID', async (req, res) => {
 router.delete('/:jID', async (req, res) => {
     const affectedRows = await service.deleteJourney(req.params.jID)
     if (affectedRows == 0)
-        res.status(404).json('no record with jID: ' + req.params.jID)
+        res.status(404).json({error: 'no record with jID: ' + req.params.jID})
     else
-        res.send('delete successfully.')
+        res.status(200).json({message: 'delete successfully'})
 })
 
 
