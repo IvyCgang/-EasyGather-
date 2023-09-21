@@ -1,0 +1,141 @@
+{
+	"info": {
+		"_postman_id": "4b0e968a-82a3-4662-a901-7ecfe3b98517",
+		"name": "Program135",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2039075"
+	},
+	"item": [
+		{
+			"name": "Get journey list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"pm.collectionVariables.set('jID', data[0].jID);",
+							"console.log(`latest jID from the result is ${pm.collectionVariables.get(\"jID\")}`);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:3000/api/journey",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"journey"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get journey by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:3000/api/journey/{{jID}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"journey",
+						"{{jID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new journey",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"jID\": 2,\n    \"uID\": \"2222\",\n    \"journeyName\": \"222\",\n    \"journeyStartTime\": 1,\n    \"journeyEndTime\": 1,\n    \"isAllDay\": 1,\n    \"location\": \"111\",\n    \"remindStatus\": 1,\n    \"remindTime\": 1,\n    \"remark\": \"1\",\n    \"color\": \"1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3000/api/journey",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"journey"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a new journey",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:3000/api/journey/{{jID}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"journey",
+						"{{jID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "jID",
+			"value": ""
+		}
+	]
+}
