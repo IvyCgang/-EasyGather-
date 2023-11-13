@@ -1,15 +1,50 @@
 const express = require('express');
 const app = express();
 const bodyparser = require('body-parser');
+//import 'btford/angular-socket-io/mock/socket-io';
+const path = require('path');
+//const httpServer = require('http').Server(app);
+const http = require("http").createServer(app);
+//const server = http.createServer(app.callback())
+//const io = require('socket.io')(httpServer, {
+//  transports: ['websocket'],
+//});
+const io = require("socket.io")(http);
+//const moment = require('moment-timezone');
 
+//require('./socket.js')(io);
+//require('socket.io')(httpServer, {
+//  transports: ['websocket'],
+//});
 require('express-async-errors')
 
 const db = require('./db'),
-    journeyRoutes = require('./controllers/journey.controller')
+    journeyRoutes = require('./controllers/journey.controller'),
+    userRoutes = require('./controllers/users.controller'),
+    eventRoutes = require('./controllers/event.controller'),
+    //getEvent = require('./controllers/getEvent.controller')
+    voteRoutes = require('./controllers/vote.controller'),
+    votingOptionRoutes = require('./controllers/votingOption.controller'),
+	resultRoutes = require('./controllers/result.controller'),
+	matchRoutes = require('./controllers/match.controller'),
+//	socketRoutes = require('./socketIO')
+    socketRoutes = require('./socket')
+app.use(express.static(path.join(__dirname,'web')));
 
-//middlewore
+app.use(function(req,res,next){
+  req.db= db;
+  next();
+});
+
 app.use(bodyparser.json())
 app.use('/api/journey', journeyRoutes)
+app.use('/api/event', eventRoutes)
+app.use('/api/user', userRoutes)
+app.use('/api/vote', voteRoutes)
+app.use('/api/votingOption', votingOptionRoutes)
+app.use('/api/result', resultRoutes)
+app.use('/api/match', matchRoutes)
+//app.use(express.static(path.join(__dirname,'web')));
 
 app.use((err, req, res, next) => {
     console.log(err)
