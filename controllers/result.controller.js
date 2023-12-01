@@ -8,7 +8,7 @@ router.post('/getAllResult/:vID/:userMall', async (req, res) => {
    const { vID, userMall } = req.params;
    const result = await service.getResultById(vID, userMall);
      if (result.length == 0) {
-        res.status(404).json('no record with vID: ' + req.params.vID)
+        res.status(404).json()
      } else {
         res.status(200).json(result);
      }
@@ -31,5 +31,39 @@ router.put('/updateResult/:voteResultID', async (req, res) => {
         else
                 res.send('update successfully')
         })
+
+
+router.post('/count/:oID', async (req, res) => {
+   const count = await service.countById(req.params.oID);
+     if (count.length == 0) {
+        res.status(404).json(count)
+     } else {
+        res.status(200).json(count);
+     }
+})
+
+router.post('/hightest/:vID', async (req, res) => {
+	const hightest = await service.hightest(req.params.vID);
+	if (hightest.length == 0) {
+		res.status(404).json({ message: 'No record with ID: ' + req.params.vID})
+	} else {
+		res.status(200).json(hightest);
+	}
+})
+
+
+
+
+
+//router.post('/finalCount/:vID', async (req, res) => {
+//   const count = await service.countById(req.params.vID);
+//     if (finalCount.length == 0) {
+//        res.status(404).json('no record with vID: ' + req.params.vID)
+//     } else {
+//        res.status(200).json(最高票為);
+//     }
+//})
+//
+//
 
 module.exports = router;

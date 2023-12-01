@@ -108,3 +108,10 @@ module.exports.getEventByFriends = async (friend) => {
     }
 };
 
+
+module.exports.deleteMyselfFromEvent = async (eID, userMall) => {
+	const [{records}] = await db.query("UPDATE event SET friends = REPLACE(friends, ?, \'\') WHERE eID = ?" , [userMall, eID]);
+	console.log(" delete yourself from event now ");
+	return records;
+}
+

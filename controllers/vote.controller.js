@@ -6,15 +6,25 @@ const router = express.Router();
 
 const service = require('../services/vote.service')
 
+//router.post('/insertVote', async (req, res) => {
+//    console.log(req.body);
+//    try {
+//            const insertedVote = await service.addVote(req.db, req.body);
+//        res.status(200).json({ message: 'The vID of this vote: ', vID: insertedVote.insertId });
+//    } catch (error) {
+//        res.status(500).json({ error: '發生錯誤' });
+//    }
+//})
+
 router.post('/insertVote', async (req, res) => {
     console.log(req.body);
     try {
-            const insertedVote = await service.addVote(req.db, req.body);
-        res.status(200).json({ message: 'The vID of this vote: ', vID: insertedVote.insertId });
+        const insertedVote = await service.addVote(req.db, req.body);
+        res.status(200).json({vID:insertedVote.insertId });
     } catch (error) {
         res.status(500).json({ error: '發生錯誤' });
     }
-})
+});
 
 
 

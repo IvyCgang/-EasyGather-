@@ -1,20 +1,29 @@
 const db = require('../db')
 
 // 註冊使用者
-module.exports.signUp = async (db, obj) =>{    
+module.exports.signUp = async (db, obj) => {
     try {
         console.log(obj);
-        console.log("before-singUp");
-        //Execute the SQL query
+        console.log("before-signUp");
+
+        // First, check if a user with the same userMall already exists
+        const [users] = await db.query("SELECT * FROM user WHERE userMall = ?", [obj.userMall]);
+        if (users.length > 0) {
+            console.log("User with the same userMall already exists.");
+            return 0; // Returning 0 to indicate that no new user was added
+        }
+
+        // If no existing user with the same userMall, proceed with the insert
         const [{ affectedRows }] = await db.query(
-            "INSERT IGNORE INTO user (uID, userMall) VALUES (?,?)",
+            "INSERT INTO user (uID, userMall) VALUES (?, ?)",
             [
                 obj.uID,
                 obj.userMall,
                 //obj.userName,
                 //obj.googleAccount,
-            ],
+            ]
         );
+
         console.log("after-signUp");
         return affectedRows;
     } 
@@ -23,6 +32,9 @@ module.exports.signUp = async (db, obj) =>{
         throw error; // Rethrow the error to be handled by the caller
     }
 };
+
+
+
 
 //
 //module.exports.getUser = async (account) => {

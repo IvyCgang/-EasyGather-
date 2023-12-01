@@ -1,31 +1,62 @@
 const db = require('../db')
 
-module.exports.addVote = async (db, obj) =>{
+//module.exports.addVote = async (db, obj) =>{
+//
+//        console.log(obj);
+//
+//        try {
+//     console.log(obj);
+//     console.log("before-addVote");
+//
+//     // Execute the SQL query
+//     const [{ result }] = await db.query(
+//       "INSERT INTO vote (eID, userMall, voteName, endTime, singleOrMultipleChoice) VALUES (?,?,?,?,?)",
+//       [
+//         obj.eID,
+//         obj.userMall,
+//         obj.voteName,
+//         obj.endTime,
+//         obj.singleOrMultipleChoice
+//       ],
+//     );
+//     
+////     const [[{ vID }]] = await db.query("SELECT LAST_INSERT_ID() as vID");
+//     
+//     
+//     console.log("after-addVote");
+//     
+////return affectedRows;
+//     return result;
+//     } catch (error) {
+//     console.error("Error adding Vote:", error.message);
+//     throw error; // Rethrow the error to be handled by the caller
+//   }
+// };
 
-        console.log(obj);
+module.exports.addVote = async (db, obj) => {
+    console.log(obj);
+    try {
+        console.log("before-addVote");
 
-        try {
-     console.log(obj);
-     console.log("before-addVote");
+        // 執行 SQL 插入查詢
+        const [result] = await db.query(
+            "INSERT INTO vote (eID, userMall, voteName, endTime, singleOrMultipleChoice) VALUES (?,?,?,?,?)",
+            [
+                obj.eID,
+                obj.userMall,
+                obj.voteName,
+                obj.endTime,
+                obj.singleOrMultipleChoice
+            ]
+        );
 
-     // Execute the SQL query
-     const [{ affectedRows }] = await db.query(
-       "INSERT INTO vote (eID, uID, voteName, endTime, singleOrMultipleChoice) VALUES (?,?,?,?,?)",
-       [
-         obj.eID,
-         obj.userMall,
-         obj.voteName,
-         obj.endTime,
-         obj.singleOrMultipleChoice
-       ],
-     );
-     console.log("after-addVote");
-     return affectedRows;
-   } catch (error) {
-     console.error("Error adding Vote:", error.message);
-     throw error; // Rethrow the error to be handled by the caller
-   }
- };
+        console.log("after-addVote");
+        return result;  // 返回插入操作的結果對象
+    } catch (error) {
+        console.error("Error adding Vote:", error.message);
+        throw error;  // 重新拋出錯誤以便調用者處理
+    }
+};
 
 
 

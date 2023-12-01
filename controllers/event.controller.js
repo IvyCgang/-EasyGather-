@@ -44,6 +44,15 @@ router.delete('/deleteEvent/:eID', async (req, res) => {
     }
 })
 
+router.post('/deleteMyselfFromEvent/:eID/:userMall', async (req, res) => {
+	const {eID, userMall} = req.params;
+    const affectedRows = await service.deleteMyselfFromEvent(eID, userMall);
+    if (affectedRows == 0)
+         res.status(404).json({ error: 'No record with eID: ' + req.params.eID });
+    else {
+        res.status(200).json({ message: 'Delete myself successfully.' });
+    }
+})
 
 router.post('/insertEvent', async (req, res) => {
     console.log(req.body);
