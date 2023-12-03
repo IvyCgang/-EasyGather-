@@ -32,7 +32,6 @@ router.put('/updateResult/:voteResultID', async (req, res) => {
                 res.send('update successfully')
         })
 
-
 router.post('/count/:oID', async (req, res) => {
    const count = await service.countById(req.params.oID);
      if (count.length == 0) {
@@ -41,6 +40,8 @@ router.post('/count/:oID', async (req, res) => {
         res.status(200).json(count);
      }
 })
+
+
 
 router.post('/hightest/:vID', async (req, res) => {
 	const hightest = await service.hightest(req.params.vID);

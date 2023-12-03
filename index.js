@@ -11,7 +11,7 @@ var allUsers = [];
 var chatRooms = [];
 
 
-module.exports = { app, server, io };
+//module.exports = { app, server, io };
 
 
 
@@ -64,17 +64,17 @@ function emitUsers(chatRoomId) {
     io.to(chatRoomId).emit('users', chatRooms[chatRoomId].users);
     console.log(`Users in chat room ${chatRoomId}:`, chatRooms[chatRoomId].users);
 }
-// function removeUser(user) {
-//     allUsers= allUsers.filter(function(ele){ 
-//         return ele != user; 
-//     });   
-// }
+//// function removeUser(user) {
+////     allUsers= allUsers.filter(function(ele){ 
+////         return ele != user; 
+////     });   
+//// }
 function removeUser(chatRoomId, userMall) {
     chatRooms[chatRoomId].users = chatRooms[chatRoomId].users.filter(function(ele) {
         return ele !== userMall;
     });
 }
-
+//
 //socket listeners
 // io.on('connection', function (socket) {
 //     var userMall = socket.request._query.userMall;
@@ -112,10 +112,15 @@ function removeUser(chatRoomId, userMall) {
 
 
 io.on('connection', function (socket) {
-    var userMall = socket.request._query.userMall;
-    var chatRoomId = socket.request._query.chatRoomId; // 從查詢參數中獲取聊天室 ID
-    var eID = socket.request._query.eID;
-
+	console.log(socket);
+    let userMall = socket.request._query.userName;
+    let chatRoomId = socket.request._query.chatRoomId; 
+	console.log('test');
+	console.log(userMall);
+    let eID = socket.request._query.eID;
+    console.log(socket.request._query.chatRoomId);
+    console.log(socket.request._query.eID);
+	
     if (!chatRooms[chatRoomId]) {
         chatRooms[chatRoomId] = { users: [], messages: [] };
 
@@ -160,8 +165,9 @@ io.on('connection', function (socket) {
         .then(([messages]) => {
             // 如果有消息，一次性发送所有消息
             if (messages.length > 0) {
-                socket.emit('allChatMessages', messages);
-            }
+                io.to(chatRoomId).emit('allChatMessages', messages);
+            	console.log(chatRoomId);
+	    }
         })
         .catch((error) => {
             console.error(`查询 chatID ${chatRoomId} 的消息时出错:`, error);
@@ -189,12 +195,17 @@ io.on('connection', function (socket) {
 
 
     // 监听 matchCompleted 事件
-    socket.on('matchCompleted', (data) => {
-        console.log(`message: ${data.message}`);
+//    socket.on('matchCompleted', (data) => {
+//        console.log(`message: ${data.message}`);
         // 在这里可以进行进一步处理，比如将消息广播给聊天室的其他用户
-        io.to(chatRoomId).emit('matchCompleted', data);
-    });
-
+//        io.to(chatRoomId).emit('matchCompleted', data);
+//  });
+//socket.on('disconnect', (data) => {
+//	console.log(data);
+//	chatRoomId = data.chatRoomId;
+//	console.log('---------');
+//	console.log(chatRoomId);
+//})
 
 socket.on('message', (data) => {
     console.log(`👤 ${data.userMall} 在 ${chatRoomId} 中說: ${data.messageContent}`);
@@ -203,7 +214,7 @@ socket.on('message', (data) => {
     if (data.messageContent) {
         db.query(
             "INSERT INTO message (chatID, userMall, messageSendTime, messageContent) VALUES (?, ?, ?, ?)",
-            [chatRoomId, data.userMall, data.messageSendTime, data.messageContent]
+            [data.chatID, data.userMall, data.messageSendTime, data.messageContent]
         ).then(([result]) => {
             const messageData = {
                 chatID: chatRoomId,
@@ -284,6 +295,10 @@ socket.on('message', (data) => {
   
 });
 
+let chatRoomId = '';
+
+
+
 app.post('/api/receive-json', (req, res) => {
     const jsonData = req.body;
 
@@ -296,16 +311,3 @@ const PORT = 3000;
 server.listen(PORT,'163.22.17.145',()=>{
     console.log('Server up and running at',PORT);
 });
-
-//module.exports = { app, server, io };
-
-
-//function getIO() {
-//    if (!socketIO) {
-//        throw new Error('Socket.io not initialized!');
-//    }
-//    return socketIO;
-//}
-//
-//module.exports = { app, server, getIO };
-////module.exports = { app, server, io };
