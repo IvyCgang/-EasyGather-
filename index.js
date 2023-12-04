@@ -114,26 +114,30 @@ function removeUser(chatRoomId, userMall) {
 io.on('connection', function (socket) {
 	console.log(socket);
     let userMall = socket.request._query.userName;
-    let chatRoomId = socket.request._query.chatRoomId; 
-	console.log('test');
+  //  let chatRoomId = socket.request._query.chatRoomId; 
+//	console.log('test');
 	console.log(userMall);
-    let eID = socket.request._query.eID;
-    console.log(socket.request._query.chatRoomId);
-    console.log(socket.request._query.eID);
-	
-    if (!chatRooms[chatRoomId]) {
-        chatRooms[chatRoomId] = { users: [], messages: [] };
+  //  let eID = socket.request._query.eID;
+  //  console.log(socket.request._query.chatRoomId);
+  //  console.log(socket.request._query.eID);
+socket.on('chatRoom', (data) => {
+	console.log('test-------------');
+        console.log('The eID = ',data.eID);
+        console.log('The chatRoomId = ',data.chatRoomId);
+
+//    if (!chatRooms[chatRoomId]) {
+//        chatRooms[chatRoomId] = { users: [], messages: [] };
 
         // Check if a chatRoom with the same eID already exists
-        db.query("SELECT * FROM chatRoom WHERE eID = ?", [eID])
+        db.query("SELECT * FROM chatRoom WHERE eID = ?", [data.eID])
             .then(([existingRecords]) => {
                 if (existingRecords.length > 0) {
-                    console.log(`ChatRoom with eID: ${eID} already exists.`);
+                    console.log(`ChatRoom with eID: ${data.eID} already exists.`);
                 } else {
                     // Proceed with insertion if no existing record is found
-                    db.query("INSERT INTO chatRoom (chatID, eID) VALUES (?, ?)", [chatRoomId, eID])
+                    db.query("INSERT INTO chatRoom (chatID, eID) VALUES (?, ?)", [data.chatRoomId, data.eID])
                         .then(([result]) => {
-                            console.log(`ChatRoomId: ${chatRoomId} 資料已成功插入到 Chat 資料表`);
+                            console.log(`ChatRoomId: ${data.chatRoomId} 資料已成功插入到 Chat 資料表`);
                         }).catch((error) => {
                             console.error(`插入 ChatRoomId 到 Chat 資料表時出錯:`, error);
                         });
@@ -142,55 +146,55 @@ io.on('connection', function (socket) {
             .catch((error) => {
                 console.error(`檢查 eID 存在於 ChatRoom 資料表時出錯:`, error);
             });
-    }	
+//}	
 
 
-    chatRooms[chatRoomId].users.push(userMall);
-    socket.join(chatRoomId);
+// chatRooms[data.chatRoomId].users.push(userMall);
+    socket.join(data.chatRoomId);
 
 
 	db.query(
     "SELECT * FROM message WHERE chatID = ?",
-    [chatRoomId]
+    [data.chatRoomId]
 ).then(([messages]) => {
  messages.forEach((message) => {
             socket.emit('chatMessage', message);
         });
     }).catch((error) => {
-        console.error(`查詢 chatID ${chatRoomId} 的訊息時出錯:`, error);
+        console.error(`查詢 chatID ${data.chatRoomId} 的訊息時出錯:`, error);
     });
 	
 	 // 查询聊天室的所有消息
-    db.query("SELECT * FROM message WHERE chatID = ?", [chatRoomId])
+    db.query("SELECT * FROM message WHERE chatID = ?", [data.chatRoomId])
         .then(([messages]) => {
             // 如果有消息，一次性发送所有消息
             if (messages.length > 0) {
-                io.to(chatRoomId).emit('allChatMessages', messages);
-            	console.log(chatRoomId);
+                io.to(data.chatRoomId).emit('allChatMessages', messages);
+            	console.log(data.chatRoomId);
 	    }
         })
         .catch((error) => {
-            console.error(`查询 chatID ${chatRoomId} 的消息时出错:`, error);
+            console.error(`查询 chatID ${data.chatRoomId} 的消息时出错:`, error);
         });
 
 
 
 	
-    var joinMsg = `🔥👤 ${userMall} has joined ${chatRoomId}! 😎🔥`;
+    var joinMsg = `🔥👤 ${userMall} has joined ${data.chatRoomId}! 😎🔥`;
     console.log(joinMsg);
-
+});
     // io.to(chatRoomId).emit('message', {
     //     "message": joinMsg
     // });
 
     socket.on('disconnect', () => {
-        var disMsg = `${userMall} has left ${chatRoomId}! 😭😭`;
-        console.log(disMsg);
+ //       var disMsg = `${userMall} has left ${data.chatRoomId}! 😭😭`;
+   //     console.log(disMsg);
         // io.to(chatRoomId).emit('message', {
         //     "message": disMsg,
         // });
-        removeUser(chatRoomId, userMall);
-        emitUsers(chatRoomId);
+       // removeUser(data.chatRoomId, userMall);
+       // emitUsers(data.chatRoomId);
     });
 
 
@@ -208,26 +212,43 @@ io.on('connection', function (socket) {
 //})
 
 socket.on('message', (data) => {
-    console.log(`👤 ${data.userMall} 在 ${chatRoomId} 中說: ${data.messageContent}`);
+    console.log(`👤 ${data.userMall} 在 ${data.chatRoomId} 中說: ${data.messageContent}`);
+
+	// 验证 chatRoomId 是否有效
+    if (!data.chatRoomId) {
+        console.error('Chat room ID is missing or invalid');
+        return;
+    }
+
+    // 确保对应的聊天室已初始化
+    if (!chatRooms[data.chatRoomId]) {
+        chatRooms[data.chatRoomId] = { users: [], messages: [] };
+    }
+
+
+	if (!data.chatRoomId) {
+        console.error('Chat room ID is missing');
+        return;
+    }
 
     // 在這裡插入訊息到 message 資料表
     if (data.messageContent) {
         db.query(
             "INSERT INTO message (chatID, userMall, messageSendTime, messageContent) VALUES (?, ?, ?, ?)",
-            [data.chatID, data.userMall, data.messageSendTime, data.messageContent]
+            [data.chatRoomId, data.userMall, data.messageSendTime, data.messageContent]
         ).then(([result]) => {
             const messageData = {
-                chatID: chatRoomId,
+                chatID:data.chatRoomId,
                 userMall: data.userMall,
                 messageSendTime: data.messageSendTime,
                 messageContent: data.messageContent
             };
 
             // 將消息保存到聊天室的消息列表中
-            chatRooms[chatRoomId].messages.push(messageData);
+            chatRooms[data.chatRoomId].messages.push(messageData);
 
             // 使用 io.to(chatRoomId).emit 傳送消息給聊天室中的所有客戶端
-            io.to(chatRoomId).emit('message', messageData);
+            io.to(data.chatRoomId).emit('message', messageData);
         }).catch((error) => {
             console.error(`將消息插入到 message 資料表時出錯:`, error);
         });
@@ -295,7 +316,7 @@ socket.on('message', (data) => {
   
 });
 
-let chatRoomId = '';
+//let chatRoomId = '';
 
 
 

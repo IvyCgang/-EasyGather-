@@ -138,7 +138,7 @@ module.exports.findAvailableTime = async (memberJourney, eID, chatID) => {
 });
 
 	socket.emit('message',{
-		"chatID":eID,
+		"chatRoomId":eID,
 		"userMall":'「揪」easy 官方小精靈',
 		"messageContent": '本活動已媒合完畢，且取得一個結果，請前往活動詳細資料確認活動時間',
 		"messageSendTime":new Date(),
@@ -196,7 +196,7 @@ module.exports.findAvailableTime = async (memberJourney, eID, chatID) => {
 });
 
         socket.emit('message',{
-                "chatID":eID,
+                "chatRoomId":eID,
                 "userMall":'「揪」easy 官方小精靈',
                 "messageContent": '本活動已媒合完畢，但有多個時間可選擇，所以小精靈我已經幫忙自動創建投票了～請前往投票選擇想要的活動時段喔！',
                 "messageSendTime":new Date(),
