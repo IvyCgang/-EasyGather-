@@ -10,6 +10,17 @@ const { io } = require('socket.io-client');
 //    query : {'userName': '系統訊息', 'chatRoomId': 1, 'eID': 1}
 //});
 
+function formatDateTimeForMessage(date) {
+    const pad = (number, length = 2) => String(number).padStart(length, '0');
+
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+           `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${pad(date.getMilliseconds(), 3)}`;
+}
+
+
+
+
+
 function formatDateTime(date) {
     const pad = (number, length = 2) => String(number).padStart(length, '0');
 
@@ -60,6 +71,8 @@ function formatDateTime(date) {
 
 module.exports.findAvailableTime = async (memberJourney, eID, chatID) => {
     try {
+	const formattedSendTime = formatDateTimeForMessage(new Date());
+
 	const [eventDetails] = await db.query("SELECT eventBlockStartTime, eventBlockEndTime, eventTime, timeLengthHours FROM event WHERE eID = ?", [eID]);
         const { eventBlockStartTime, eventBlockEndTime, eventTime, timeLengthHours } = eventDetails[0];
 
@@ -141,7 +154,7 @@ module.exports.findAvailableTime = async (memberJourney, eID, chatID) => {
 		"chatRoomId":eID,
 		"userMall":'「揪」easy 官方小精靈',
 		"messageContent": '本活動已媒合完畢，且取得一個結果，請前往活動詳細資料確認活動時間',
-		"messageSendTime":new Date(),
+		"messageSendTime": formattedSendTime,
 	});
 
 	console.log("send");
@@ -199,7 +212,7 @@ module.exports.findAvailableTime = async (memberJourney, eID, chatID) => {
                 "chatRoomId":eID,
                 "userMall":'「揪」easy 官方小精靈',
                 "messageContent": '本活動已媒合完畢，但有多個時間可選擇，所以小精靈我已經幫忙自動創建投票了～請前往投票選擇想要的活動時段喔！',
-                "messageSendTime":new Date(),
+                "messageSendTime": formattedSendTime,
         });
 
         console.log("send");

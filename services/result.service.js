@@ -126,9 +126,10 @@ module.exports.hightest = async (vID) => {
     transports: ["websocket"] ,
     query : {'userName': '系統訊息', 'chatRoomId': eID, 'eID': eID}
 });
+	    console.log(new Date());
 	const messageContent = `投票結果：\n最高票數的選項為：${votingOptionContent}`;
         socket.emit('message',{
-                "chatID":eID,
+                "chatRoomId":eID,
                 "userMall":'「揪」easy 官方小精靈',
                 "messageContent": messageContent,
                 "messageSendTime":formatDateTime(new Date()),
